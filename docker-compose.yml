@@ -1,0 +1,11 @@
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: paypilot
+      POSTGRES_USER: paypilot
+      POSTGRES_PASSWORD: paypilot_local_only
+    ports: ["5432:5432"]
+    volumes: ["paypilot_pgdata:/var/lib/postgresql/data"]
+volumes:
+  paypilot_pgdata:

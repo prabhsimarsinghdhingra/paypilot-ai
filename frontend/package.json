@@ -1,0 +1,28 @@
+{
+  "name": "paypilot-ai-frontend",
+  "version": "0.3.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "ag-grid-community": "~36.3.0",
+    "ag-grid-react": "~36.3.0",
+    "ag-studio": "^3.1.0",
+    "ag-studio-react": "^3.1.0",
+    "next": "^15.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "recharts": "^2.15.0"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.17.27",
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "typescript": "^5.7.0"
+  }
+}

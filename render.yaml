@@ -1,0 +1,58 @@
+# Render Blueprint: API + Postgres + Workflows (overnight sweep) + nightly cron trigger.
+# Paid plans on purpose: Free Postgres EXPIRES 30 days after creation and Free web services SLEEP after 15 idle minutes (see docs/DEPLOY.md).
+# Claim the hackathon credits first: https://credits-portal-mmdm.onrender.com/claim/paypal-ai-hackathon
+# Verify plan names and prices in Render's Blueprint preview before you click create; it shows errors and cost up front.
+databases:
+  - name: paypilot-db
+    plan: basic-256mb
+    region: oregon
+
+services:
+  - type: web
+    name: paypilot-api
+    runtime: docker
+    plan: starter
+    region: oregon
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    healthCheckPath: /health
+    envVars:
+      - { key: APP_ENV, value: production }
+      - { key: DATABASE_URL, fromDatabase: { name: paypilot-db, property: connectionString } }
+      - { key: JWT_SECRET, sync: false }              # SAME value as the workflow (it decrypts stored PayPal secrets). python -c "import secrets;print(secrets.token_urlsafe(48))"
+      - { key: FRONTEND_URL, sync: false }            # exact Vercel origin, no trailing slash, e.g. https://paypilot.vercel.app
+      - { key: PAYPAL_CLIENT_ID, sync: false }        # optional: omit to run the labeled demo simulator
+      - { key: PAYPAL_CLIENT_SECRET, sync: false }
+      - { key: PAYPAL_WEBHOOK_ID, sync: false }
+      - { key: GEMINI_API_KEY, sync: false }
+      - { key: GEMINI_MODEL, sync: false }            # the model scripts/pick_model.py recommended
+      - { key: GEMINI_FALLBACK_MODELS, sync: false }
+      - { key: RENDER_API_KEY, sync: false }          # lets the API start workflow runs (Account Settings > API Keys)
+      - { key: RENDER_WORKFLOW_SLUG, value: paypilot-workflow }
+
+  - type: workflow
+    name: paypilot-workflow
+    runtime: python
+    region: oregon
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: python workflow_main.py
+    envVars:
+      - { key: APP_ENV, value: production }
+      - { key: DATABASE_URL, fromDatabase: { name: paypilot-db, property: connectionString } }
+      - { key: JWT_SECRET, sync: false }              # must equal the API's JWT_SECRET
+      - { key: PAYPAL_CLIENT_ID, sync: false }
+      - { key: PAYPAL_CLIENT_SECRET, sync: false }
+
+  - type: cron
+    name: paypilot-nightly-sweep
+    runtime: python
+    plan: starter
+    region: oregon
+    rootDir: backend
+    schedule: "0 2 * * *"                              # 02:00 UTC daily; Workflows have no built-in schedule
+    buildCommand: pip install -r requirements.txt
+    startCommand: python scripts/trigger_sweep_all.py
+    envVars:
+      - { key: RENDER_API_KEY, sync: false }
+      - { key: RENDER_WORKFLOW_SLUG, value: paypilot-workflow }
