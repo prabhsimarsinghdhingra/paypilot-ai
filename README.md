@@ -15,7 +15,7 @@ Built for the PayPal AI Hackathon 2026 (PayPal + Gemini + AG Grid). Sandbox only
 - **Forecast and alerts:** weekly-trend forecast with uncertainty ranges, explainable anomaly flags.
 
 ## Try it (judges)
-Hosted demo: _add URL_ · Register any email/password. Without PayPal keys the backend shows a clearly labeled **demo simulator**; add Sandbox credentials in **Settings** for real PayPal data. Test credentials: _add after deploy_.
+Hosted demo: https://paypilot-ai-gamma.vercel.app · Register any email/password. Without PayPal keys the backend shows a clearly labeled **demo simulator**; add Sandbox credentials in **Settings** for real PayPal data. Test credentials: _add after deploy_.
 
 ## Run locally
 See [docs/DEPLOY.md](docs/DEPLOY.md). **Verify everything locally:** `python scripts/check.py` (fast) or `python scripts/check.py --full` (adds build + browser tests) or `--live` (tests your real PayPal Sandbox and Gemini keys). Details in [docs/TESTING.md](docs/TESTING.md).
